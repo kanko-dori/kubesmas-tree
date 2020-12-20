@@ -19,8 +19,8 @@
 #define WAVE_INTERVAL 8
 #define WAVE_COLOR_VARIATION_WIDTH 1
 #define RANDOM_INTERVAL 100
-#define BRIGHTNESS 16
-#define POD_MAGNIFICATION 3
+#define BRIGHTNESS 255
+#define POD_MAGNIFICATION 5
 #define SPECIAL_INTERVAL (2000/NUM_LEDS)
 #define SPECIAL_WAIT 2000
 
@@ -122,7 +122,7 @@ void loop() {
                 USE_SERIAL.println(illuminationPattern);
 
                 illuminate(pod, illuminationPattern);
-                //illuminate(1, 150);
+                //illuminate(150, 3);
             }
         } else {
             USE_SERIAL.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
@@ -157,7 +157,7 @@ void illuminate(const int pod, const int illuminationPattern) {
 void illuminate_special() {
   for(int i = 0; i < NUM_LEDS; i++) {
     reset_LED();
-    leds[i] = CRGB::Red;
+    leds[i] = CHSV(random(256), 255, 255);
     FastLED.show();
     delay(SPECIAL_INTERVAL);
   }
@@ -183,7 +183,7 @@ void illuminate_wave(const int num_lighted_LEDs) {
   for(int i = 0; i < WAIT_TIME_MILLIS / WAVE_INTERVAL; i++) {
     reset_LED();
     for(int j = 0; j < num_lighted_LEDs; j++) {
-      leds[(i + j) % NUM_LEDS] = CHSV(((i + j) * WAVE_COLOR_VARIATION_WIDTH) % 256, 255, 255);
+      leds[(i + j) % NUM_LEDS] = CHSV(((i * 2 + j) * WAVE_COLOR_VARIATION_WIDTH) % 256, 255, 255);
     }
     FastLED.show();
     delay(WAVE_INTERVAL);
