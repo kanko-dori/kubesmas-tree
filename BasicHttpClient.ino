@@ -21,7 +21,7 @@
 #define RANDOM_INTERVAL 100
 #define BRIGHTNESS 16
 #define POD_MAGNIFICATION 3
-#define SPECIAL_INTERVAL 2000/NUM_LEDS
+#define SPECIAL_INTERVAL (2000/NUM_LEDS)
 #define SPECIAL_WAIT 2000
 
 WiFiMulti wifiMulti;
@@ -132,7 +132,7 @@ void loop() {
     }
 }
 
-void illuminate(const int pod, int illuminationPattern) {
+void illuminate(const int pod, const int illuminationPattern) {
   FastLED.setBrightness(BRIGHTNESS);
   int num_lighted_LEDs = pod * POD_MAGNIFICATION;
   if(num_lighted_LEDs >= NUM_LEDS) {
