@@ -8,6 +8,7 @@
 
 #define NUM_LEDS 150
 #define DATA_PIN 13
+#define SWITCH_PIN 21
 
 // Illumination Pattern
 #define STATIC 1
@@ -23,6 +24,7 @@
 #define POD_MAGNIFICATION 5
 #define SPECIAL_INTERVAL (2000/NUM_LEDS)
 #define SPECIAL_WAIT 2000
+#define NUM_LIGHTED_LEDS (NUM_LEDS/2)
 
 WiFiMulti wifiMulti;
 
@@ -67,68 +69,78 @@ void setup() {
     USE_SERIAL.println();
     USE_SERIAL.println();
 
-    for(uint8_t t = 4; t > 0; t--) {
+    pinMode(SWITCH_PIN, INPUT_PULLUP);
+
+    if(digitalRead(SWITCH_PIN) == HIGH) {
+      for(uint8_t t = 4; t > 0; t--) {
         USE_SERIAL.printf("[SETUP] WAIT %d...\n", t);
         USE_SERIAL.flush();
         delay(1000);
-    }
+      }
 
-    wifiMulti.addAP("uzuhouse", "uzuhouse");
+      wifiMulti.addAP("uzuhouse", "uzuhouse");
+    }
 
     FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
     randomSeed(0);
 }
 
 void loop() {
-    // wait for WiFi connection
-    if((wifiMulti.run() == WL_CONNECTED)) {
+    if(digitalRead(SWITCH_PIN) == HIGH) {
+      // wait for WiFi connection
+      if((wifiMulti.run() == WL_CONNECTED)) {
 
-        HTTPClient http;
+          HTTPClient http;
 
-        USE_SERIAL.print("[HTTP] begin...\n");
-        http.begin("http://20.194.189.218/iot"); //HTTP
+          USE_SERIAL.print("[HTTP] begin...\n");
+          http.begin("http://20.194.189.218/iot"); //HTTP
 
-        USE_SERIAL.print("[HTTP] GET...\n");
-        // start connection and send HTTP header
-        int httpCode = http.GET();
+          USE_SERIAL.print("[HTTP] GET...\n");
+          // start connection and send HTTP header
+          int httpCode = http.GET();
 
-        // httpCode will be negative on error
-        if(httpCode > 0) {
-            // HTTP header has been send and Server response header has been handled
-            USE_SERIAL.printf("[HTTP] GET... code: %d\n", httpCode);
+          // httpCode will be negative on error
+          if(httpCode > 0) {
+              // HTTP header has been send and Server response header has been handled
+              USE_SERIAL.printf("[HTTP] GET... code: %d\n", httpCode);
 
-            // file found at server
-            if(httpCode == HTTP_CODE_OK) {
-                String payload = http.getString();
-                USE_SERIAL.println(payload);
+              // file found at server
+              if(httpCode == HTTP_CODE_OK) {
+                  String payload = http.getString();
+                  USE_SERIAL.println(payload);
 
-                String first_data = "";
-                String second_data = "";
-                for(int i = 0; i < payload.length(); i++) {
-                  const char c = payload.charAt(i);
-                  if(c == ',') {
-                    second_data = payload.substring(i + 1);
-                    break;
-                  } else {
-                    first_data.concat(c);
-                  }
-                }
+                  String first_data = "";
+                  String second_data = "";
+                  for(int i = 0; i < payload.length(); i++) {
+                      const char c = payload.charAt(i);
+                      if(c == ',') {
+                        second_data = payload.substring(i + 1);
+                        break;
+                      } else {
+                        first_data.concat(c);
+                      }
+                   }
 
-                const int pod = first_data.toInt();
-                const int illuminationPattern = second_data.toInt();
+                  const int pod = first_data.toInt();
+                  const int illuminationPattern = second_data.toInt();
 
-                USE_SERIAL.print(pod);
-                USE_SERIAL.print(" ");
-                USE_SERIAL.println(illuminationPattern);
+                  USE_SERIAL.print(pod);
+                  USE_SERIAL.print(" ");
+                  USE_SERIAL.println(illuminationPattern);
 
-                illuminate(pod, illuminationPattern);
-                //illuminate(150, 3);
-            }
-        } else {
-            USE_SERIAL.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
-        }
+                  illuminate(pod, illuminationPattern);
+                  //illuminate(150, 3);
+              }
+          } else {
+              USE_SERIAL.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+          }
 
-        http.end();
+          http.end();
+      }
+    } else {
+      illuminate_static(NUM_LIGHTED_LEDS);
+      illuminate_wave(NUM_LIGHTED_LEDS);
+      illuminate_random(NUM_LIGHTED_LEDS);
     }
 }
 
