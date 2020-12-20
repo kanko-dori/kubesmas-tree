@@ -10,17 +10,19 @@
 #define DATA_PIN 13
 
 // Illumination Pattern
-#define STATIC 0
-#define WAVE 1
-#define RANDOM 2
+#define STATIC 1
+#define WAVE 2
+#define RANDOM 3
 
 // Parameters
-#define WAIT_TIME_MILLIS 30000
+#define WAIT_TIME_MILLIS 5000
 #define WAVE_INTERVAL 8
 #define WAVE_COLOR_VARIATION_WIDTH 1
 #define RANDOM_INTERVAL 100
 #define BRIGHTNESS 16
 #define POD_MAGNIFICATION 3
+#define SPECIAL_INTERVAL 2000/NUM_LEDS
+#define SPECIAL_WAIT 2000
 
 WiFiMulti wifiMulti;
 
@@ -119,16 +121,8 @@ void loop() {
                 USE_SERIAL.print(" ");
                 USE_SERIAL.println(illuminationPattern);
 
-                
-
-                //illuminate(pod, illuminationPattern);
-                illuminate(1, 1);
-
-                /*for(int i = 0; i < pod; i++) {
-                  leds[i] = CRGB::Aqua;
-                }
-                FastLED.setBrightness(31);
-                FastLED.show();*/
+                illuminate(pod, illuminationPattern);
+                //illuminate(1, 150);
             }
         } else {
             USE_SERIAL.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
@@ -138,46 +132,56 @@ void loop() {
     }
 }
 
-void illuminate(const int pod, const int illuminationPattern) {
+void illuminate(const int pod, int illuminationPattern) {
   FastLED.setBrightness(BRIGHTNESS);
+  int num_lighted_LEDs = pod * POD_MAGNIFICATION;
+  if(num_lighted_LEDs >= NUM_LEDS) {
+    illuminate_special();
+    num_lighted_LEDs = NUM_LEDS;
+  }
   switch(illuminationPattern) {
     case STATIC:
-      illuminate_static(pod);
+      illuminate_static(num_lighted_LEDs);
       break;
     case WAVE:
-      illuminate_wave(pod);
+      illuminate_wave(num_lighted_LEDs);
       break;
     case RANDOM:
-      illuminate_random(pod);
+      illuminate_random(num_lighted_LEDs);
       break;
   }
   reset_LED();
   FastLED.show();
 }
 
-void illuminate_static(const int pod) {
-  int num_lighted_LEDs = pod * POD_MAGNIFICATION;
-  if(num_lighted_LEDs > NUM_LEDS) {
-    num_lighted_LEDs = NUM_LEDS;
+void illuminate_special() {
+  for(int i = 0; i < NUM_LEDS; i++) {
+    reset_LED();
+    leds[i] = CRGB::Red;
+    FastLED.show();
+    delay(SPECIAL_INTERVAL);
   }
+  reset_LED();
+  FastLED.show();
+  delay(SPECIAL_WAIT);
+}
+
+void illuminate_static(const int num_lighted_LEDs) {
   const int led_width = NUM_LEDS / num_lighted_LEDs;
+  const CHSV color = CHSV(random(256), 255, 255);
   for(int i = 0; i < NUM_LEDS; i++) {
     leds[i] =
       i % led_width == 0
-        ? CRGB::Aqua
-        : CRGB::Black;
+        ? color
+        : CHSV(0, 0, 0);
   }
   FastLED.show();
   delay(WAIT_TIME_MILLIS);
 }
 
-void illuminate_wave(const int pod) {
+void illuminate_wave(const int num_lighted_LEDs) {
   for(int i = 0; i < WAIT_TIME_MILLIS / WAVE_INTERVAL; i++) {
     reset_LED();
-    int num_lighted_LEDs = pod * POD_MAGNIFICATION;
-    if(num_lighted_LEDs > NUM_LEDS) {
-      num_lighted_LEDs = NUM_LEDS;
-    }
     for(int j = 0; j < num_lighted_LEDs; j++) {
       leds[(i + j) % NUM_LEDS] = CHSV(((i + j) * WAVE_COLOR_VARIATION_WIDTH) % 256, 255, 255);
     }
@@ -186,20 +190,16 @@ void illuminate_wave(const int pod) {
   }
 }
 
-void illuminate_random(const int pod) {
+void illuminate_random(const int num_lighted_LEDs) {
   for(int i = 0; i < WAIT_TIME_MILLIS / RANDOM_INTERVAL; i++) {
-    bool led_enabled[NUM_LEDS] = {false};
-    int num_lighted_LEDs = pod * POD_MAGNIFICATION;
-    if(num_lighted_LEDs > NUM_LEDS) {
-      num_lighted_LEDs = NUM_LEDS;
-    }
+    bool LED_enabled[NUM_LEDS] = {false};
     for(int i = 0; i < num_lighted_LEDs; i++) {
-      led_enabled[i] = true;
+      LED_enabled[i] = true;
     }
-    shuffle(led_enabled);
+    shuffle(LED_enabled);
     for(int j = 0; j < NUM_LEDS; j++) {
       leds[j] =
-        led_enabled[j]
+        LED_enabled[j]
           ? CHSV(random(256), 255, 255)
           : CHSV(0, 0, 0);
     }
