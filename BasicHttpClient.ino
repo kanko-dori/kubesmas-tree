@@ -28,7 +28,7 @@
 #define POD_MAGNIFICATION 5
 #define SPECIAL_INTERVAL (2000/NUM_LEDS)
 #define SPECIAL_WAIT 2000
-#define NUM_LIGHTED_LEDS (NUM_LEDS/2)
+#define NUM_PODS 15
 
 WiFiMulti wifiMulti;
 
@@ -145,9 +145,9 @@ void loop() {
       break;
 
     case STAND_ALONE:
-      illuminate_static(NUM_LIGHTED_LEDS);
-      illuminate_wave(NUM_LIGHTED_LEDS);
-      illuminate_random(NUM_LIGHTED_LEDS);
+      illuminate(NUM_PODS, STATIC);
+      illuminate(NUM_PODS, WAVE);
+      illuminate(NUM_PODS, RANDOM);
       break;
   }
 }
