@@ -82,9 +82,7 @@ void setup() {
     : STAND_ALONE;
 
   if (run_mode == WIFI) {
-    USE_SERIAL.println("Searching for WiFi Access Point...");
     wifiMulti.addAP("uzuhouse", "uzuhouse");// addAP(SSID, PASSWORD);
-    USE_SERIAL.print("Found.");
   }
 
   FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
