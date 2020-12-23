@@ -76,19 +76,15 @@ void setup() {
 
   pinMode(SWITCH_PIN, INPUT_PULLUP);
 
-  if (digitalRead(SWITCH_PIN) == HIGH) {
-    for (uint8_t t = 4; t > 0; t--) {
-      USE_SERIAL.printf("[SETUP] WAIT %d...\n", t);
-      USE_SERIAL.flush();
-      delay(1000);
-    }
+  run_mode =
+    digitalRead(SWITCH_PIN) == HIGH
+    ? WIFI
+    : STAND_ALONE;
 
+  if (run_mode == WIFI) {
+    USE_SERIAL.println("Searching for WiFi Access Point...");
     wifiMulti.addAP("uzuhouse", "uzuhouse");// addAP(SSID, PASSWORD);
-
-    run_mode = WIFI;
-
-  } else {
-    run_mode = STAND_ALONE;
+    USE_SERIAL.print("Found.");
   }
 
   FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
