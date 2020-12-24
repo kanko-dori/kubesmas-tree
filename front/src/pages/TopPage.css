@@ -1,0 +1,47 @@
+.TopPage {
+  position: absolute;
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%, -50%);
+
+  width: 100vmin;
+  height: 100vmin;
+}
+
+.TopPage-title {
+  font-size: 1.6rem;
+  font-weight: lighter;
+
+  position: absolute;
+  top: 5vmin;
+  left: 5vmin;
+
+  z-index: 1000;
+}
+.TopPage-title p {
+  position: relative;
+}
+.TopPage-title-kubesmas::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--font-color);
+  content: '';
+  display: block;
+  transform-origin: right;
+  animation: show-paragraph 0.5s ease 5.1s both;
+}
+.TopPage-title-tree::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--font-color);
+  content: '';
+  display: block;
+  transform-origin: right;
+  animation: show-paragraph 0.5s ease 5.3s both;
+}

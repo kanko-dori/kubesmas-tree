@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubesmas-front
+  namespace: kubesmas-tree
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kubesmas-front
+  template:
+    metadata:
+      labels:
+        app: kubesmas-front
+    spec:
+      containers:
+        - name: kubesmas-front
+          image: kankodori.azurecr.io/kanko-dori/kubesmas-tree-front:10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          ports:
+            - containerPort: 80

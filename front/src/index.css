@@ -1,0 +1,39 @@
+* {
+  margin: 0;
+  user-select: none;
+}
+
+html {
+  font-size: 5vmin;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Major Mono Display', monospace;
+
+  --bg-color: #031d03;
+  --font-color: #eeffee;
+  --shadow: #010e01c7;
+  background-color: var(--bg-color);
+  color: var(--font-color);
+
+  font-size: 1rem;
+  font-weight: lighter;
+
+  --sqrt3: 1.73205080757;
+}
+
+@keyframes blink-show {
+  0% { opacity: 0; }
+  33% { opacity: 0;}
+  34% { opacity: 1; }
+  66% { opacity: 1; }
+  67% { opacity: 0; }
+  99% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes show-paragraph {
+  0% { transform: scaleX(1); }
+  100% { transform: scaleX(0); }
+}

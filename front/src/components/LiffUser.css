@@ -1,0 +1,20 @@
+.LiffUser {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(56,177,35,1) 0%, rgba(3,52,3,1) 72%, rgba(0,25,3,1) 100%);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  animation: blink-show 0.6s linear 5.4s both;
+}
+
+.LiffUser-icon {
+  width: 30%;
+}
+.LiffUser-name {
+  font-size: 0.5rem;
+  font-family: Arial, Helvetica, sans-serif;
+}

@@ -1,0 +1,35 @@
+.VoteStatus {
+  position: absolute;
+  bottom: 0vmin;
+  left: 42.5vmin;
+}
+
+.VoteStatus p {
+  font-size: 1.25rem;
+  position: relative;
+}
+
+.VoteStatus-current::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--font-color);
+  content: '';
+  display: block;
+  transform-origin: left;
+  animation: show-paragraph 0.5s ease 5.9s both;
+}
+.VoteStatus-pattern::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--font-color);
+  content: '';
+  display: block;
+  transform-origin: left;
+  animation: show-paragraph 0.5s ease 5.7s both;
+}
